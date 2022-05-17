@@ -16,9 +16,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.util.Log;
 import android.util.Base64;
 
@@ -63,28 +60,11 @@ public class CordovaHttpPlugin extends CordovaPlugin implements Observer {
   }
 
   @Override
-  public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext)
+  public boolean execute(final String action, final JSONArray args, final CallbackContext callbackContext)
       throws JSONException {
 
     if (action == null) {
       return false;
-    }
-
-    if ("setServerTrustMode".equals(action)) {
-      return this.setServerTrustMode(args, callbackContext);
-    } else if ("setClientAuthMode".equals(action)) {
-      return this.setClientAuthMode(args, callbackContext);
-    } else if ("abort".equals(action)) {
-      return this.abort(args, callbackContext);
-    }
-
-    if (!isNetworkAvailable()) {
-      CordovaHttpResponse response = new CordovaHttpResponse();
-      response.setStatus(-6);
-      response.setErrorMessage("No network connection available");
-      callbackContext.error(response.toJSON());
-
-      return true;
     }
 
     if ("get".equals(action)) {
@@ -96,7 +76,36 @@ public class CordovaHttpPlugin extends CordovaPlugin implements Observer {
     } else if ("options".equals(action)) {
       return this.executeHttpRequestWithoutData(action, args, callbackContext);
     } else if ("post".equals(action)) {
-      return this.executeHttpRequestWithData(action, args, callbackContext);
+	
+        //////////////////////////////////
+        //////////////////////////////////
+        cordova.getThreadPool().execute(new Runnable() {
+        public void run() {
+            try
+            {
+        	
+            
+        //////////////////////////////////
+        //////////////////////////////////
+    
+        	executeHttpRequestWithData(action, args, callbackContext);
+    
+        //////////////////////////////////
+        //////////////////////////////////
+            }
+            catch(JSONException e)
+            {
+        	
+            }
+        }
+        });
+        return true;
+        
+        //////////////////////////////////
+        //////////////////////////////////	
+	
+        //return this.executeHttpRequestWithData(action, args, callbackContext);
+        
     } else if ("put".equals(action)) {
       return this.executeHttpRequestWithData(action, args, callbackContext);
     } else if ("patch".equals(action)) {
@@ -105,6 +114,12 @@ public class CordovaHttpPlugin extends CordovaPlugin implements Observer {
       return this.uploadFiles(args, callbackContext);
     } else if ("downloadFile".equals(action)) {
       return this.downloadFile(args, callbackContext);
+    } else if ("setServerTrustMode".equals(action)) {
+      return this.setServerTrustMode(args, callbackContext);
+    } else if ("setClientAuthMode".equals(action)) {
+      return this.setClientAuthMode(args, callbackContext);
+    } else if ("abort".equals(action)) {
+      return this.abort(args, callbackContext);
     } else {
       return false;
     }
@@ -262,12 +277,5 @@ public class CordovaHttpPlugin extends CordovaPlugin implements Observer {
         removeReq(c.getRequestId());
       }
     }
-  }
-
-  private boolean isNetworkAvailable() {
-    ConnectivityManager connectivityManager = (ConnectivityManager) cordova.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-
-    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
   }
 }
