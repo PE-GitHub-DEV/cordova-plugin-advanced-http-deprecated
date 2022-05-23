@@ -79,6 +79,7 @@ public class CordovaHttpPlugin extends CordovaPlugin implements Observer {
 	
         //////////////////////////////////
         //////////////////////////////////
+        //////////////////////////////////
         cordova.getThreadPool().execute(new Runnable() {
         public void run() {
             try
