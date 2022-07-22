@@ -77,7 +77,7 @@ public class CordovaHttpPlugin extends CordovaPlugin implements Observer {
       return this.executeHttpRequestWithoutData(action, args, callbackContext);
     } else if ("post".equals(action)) {
 	
-        ////////////////////////////////// /* [Azentio] fix #1378944 - Add Thread Runnable */
+        
 
         cordova.getThreadPool().execute(new Runnable() {
         public void run() {
@@ -100,7 +100,7 @@ public class CordovaHttpPlugin extends CordovaPlugin implements Observer {
         return true;
         
         
-        ////////////////////////////////// /* [Azentio] fix #1378944 - Add Thread Runnable */	 
+        
 	
         //return this.executeHttpRequestWithData(action, args, callbackContext);
         
